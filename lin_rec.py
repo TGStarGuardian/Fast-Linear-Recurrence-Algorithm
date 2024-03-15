@@ -30,7 +30,7 @@ class LinearRecurrence:
 	def oneTerm(self, initialValues, N):
 		return self.oneCoeff(self.generatingFunction.P(initialValues), self.generatingFunction.Q, N)
 	
-	# code that computes the power series expansion of 1/Q from x^(N - order + 1) up to x^(N) 
+	# code that computes the power series expansion of 1/Q from x^(N - order + 1) up to x^(N)
 	def sliceCoeff(self, Q, N):
 		if not N:
 			R = np.array([0 for _ in range(self.order)])
@@ -65,12 +65,38 @@ class LinearRecurrence:
 		for i in range(len(initialValueMatrix)):
 			R[i] = sum(map(lambda x, y : x * y, P[i], U))
 		return R
-		
+	
+	# computes x^N mod C(x), where C is the characteristic polynomial of the recurrence
+	def newModExp(self, N):
+		Q = self.generatingFunction.Q
+		U = self.sliceCoeff(Q, N)
+		return np.array(list(reversed(polynomial.polymul(U, Q)[:self.order:])))
+	
+	# computes terms from [F_d+1, ..., F_2d+1], where d is the order of the equation
+	def initialSlice(self, initialValues):
+		Q = self.generatingFunction.Q
+		T = -polynomial.polymul(Q, initialValues)[self.order::]
+		H = self.sliceCoeff(Q, self.order - 1)
+		V = polynomial.polymul(H, T)[:self.order:]
+		return V
+	
+	# computes a slice of terms [F_N, ... , F_N+d-1]
+	def newFiducciaNTerm(self, initialValues, N):
+		R = self.newModExp(N)
+		U = np.concatenate((initialValues, self.initialSlice(initialValues)), axis = None)[:(self.order << 2) - 1:]
+		V = polynomial.polymul(U, polynomial.polymulx(list(reversed(R))))
+		return V[self.order:self.order << 1:]
 		
 Fibonacci = LinearRecurrence([-1, -1, 1])
-print(Fibonacci.oneTerm([0, 1], int(input())))
-print(Fibonacci.oneCoeffT([0, 1], int(input())))
-print(Fibonacci.vectorNTerm([[0, 1], [0, 1], [1, 1], [2, 2]], 5))
+# print(Fibonacci.oneTerm([0, 1], int(input())))
+# print(Fibonacci.oneCoeffT([0, 1], int(input())))
+# print(Fibonacci.vectorNTerm([[0, 1], [0, 1], [1, 1], [2, 2]], 5))
+# print(Fibonacci.newModExp(int(input())))
+# print(Fibonacci.newFiducciaNTerm([0, 1], int(input())))
+
+Tribonacci = LinearRecurrence([-1, -1, -1, 1])
+print(Tribonacci.newFiducciaNTerm([0, 0, 1], int(input())))
+
 
 
 
