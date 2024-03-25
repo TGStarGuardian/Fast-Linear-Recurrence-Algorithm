@@ -34,17 +34,17 @@ The code consists of two functions:
 -----------------------------------------------
 Examples
 
-Fibonacci = LinearRecurrence([-1, -1, 1])
-print(Fibonacci.oneTerm([0, 1], 5)
+$ Fibonacci = LinearRecurrence([-1, -1, 1])
+$ print(Fibonacci.oneTerm([0, 1], 5)
 >> 5
-print(Fibonacci.vectorNTerm([[0, 1], [0, 1], [1, 1], [2, 2]], 5))
+$ print(Fibonacci.vectorNTerm([[0, 1], [0, 1], [1, 1], [2, 2]], 5))
 >> [5 5 8 16]
-print(Fibonacci.newModExp(5))
+$ print(Fibonacci.newModExp(5))
 >> [3, 5] ///// x^5 mod (x^2 - x - 1) = 3 + 5x
-print(Fibonacci.newFiducciaNTerm([0, 1], 5)
+$ print(Fibonacci.newFiducciaNTerm([0, 1], 5)
 >> [5, 8] ///// F5 = 5, F6 = 8
-print(Fibonacci.sliceCoeff(Fibonacci.generatingFunction.denominator, 5))
+$ print(Fibonacci.sliceCoeff(Fibonacci.generatingFunction.denominator, 5))
 >> [5, 8] ///// i.e. 5 x^4 + 8 x^5 in the power series of 1/(1 - x - x^2)
-print(Fibonacci.initialSlice([0, 1]))
+$ print(Fibonacci.initialSlice([0, 1]))
 >> [1, 2] ///// the sequence goes 0, 1, 1, 2
 

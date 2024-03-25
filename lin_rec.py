@@ -1,20 +1,6 @@
 from numpy.polynomial import polynomial
 import numpy as np
 
-# p1 is of deg n
-# p2 is of deg at most 2n-1
-# return value: coefficients from x^n up to x^(2n-1) in p1*p2
-def middle_product(p1, p2):
-	n = len(p1) - 1
-	R = np.array([0 for _ in range(n)])
-	for i in range(n + 1):
-		for j in range(n - i, min(n << 1, len(p2))):
-			if i + j >= n << 1:
-				break
-			else:
-				R[i + j - n] += p1[i]*p2[j]
-	return R
-
 class LinearRecurrence:
 	def __init__(self, equation):
 		# a polynomial describing the equation Fn = a0 F0 + ... + an-1 Fn-1
@@ -47,7 +33,7 @@ class LinearRecurrence:
 	# code that computes the power series expansion of 1/denominator from x^(N - order + 1) up to x^(N)
 	def sliceCoeff(self, denominator, N):
 		if not N:
-			R = np.array([0 for _ in range(self.order)])
+			R = np.zeros(self.order)
 			R[-1] = 1/denominator[0]
 			return R
 		T = denominator.copy()
@@ -62,7 +48,6 @@ class LinearRecurrence:
 		if not (N & 1):
 			S = polynomial.polymulx(S)
 		
-		return middle_product(T, S)
 		B = polynomial.polymul(T, S)
 		return np.array([B[self.order + i] for i in range(self.order)])
 	
@@ -99,16 +84,16 @@ class LinearRecurrence:
 		V = polynomial.polymul(U, polynomial.polymulx(list(reversed(R))))
 		return V[self.order:self.order << 1:]
 		
-Fibonacci = LinearRecurrence([-1, -1, 1])
-print(Fibonacci.oneTerm([0, 1], int(input())))
-print(Fibonacci.vectorNTerm([[0, 1], [0, 1], [1, 1], [2, 2]], 5))
-print(Fibonacci.newModExp(int(input())))
-print(Fibonacci.newFiducciaNTerm([0, 1], int(input())))
-print(Fibonacci.sliceCoeff(Fibonacci.generatingFunction.denominator, 1))
-print(Fibonacci.initialSlice([0, 1]))
+# Fibonacci = LinearRecurrence([-1, -1, 1])
+# print(Fibonacci.oneTerm([0, 1], int(input())))
+# print(Fibonacci.vectorNTerm([[0, 1], [0, 1], [1, 1], [2, 2]], 5))
+# print(Fibonacci.newModExp(int(input())))
+# print(Fibonacci.newFiducciaNTerm([0, 1], int(input())))
+# print(Fibonacci.sliceCoeff(Fibonacci.generatingFunction.denominator, 1))
+# print(Fibonacci.initialSlice([0, 1]))
 
-Tribonacci = LinearRecurrence([-1, -1, -1, 1])
-print(Tribonacci.newFiducciaNTerm([0, 0, 1], int(input())))
+# Tribonacci = LinearRecurrence([-1, -1, -1, 1])
+# print(Tribonacci.newFiducciaNTerm([0, 0, 1], int(input())))
 
 
 
