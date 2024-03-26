@@ -1,6 +1,21 @@
 from numpy.polynomial import polynomial
 import numpy as np
 
+# p1 has degree n, p2 has degree no more than 2n - 1
+# computes the terms from x^n up to x^(2n-1), i.e. the middle n terms
+def middle_product(p1, p2):
+	if len(p1) > len(p2):
+		return middle_product(p2, p1)
+	n = len(p1) - 1
+	R, t = np.zeros(n), n << 1
+	for i in range(n + 1):
+		for j in range(n - i, t - i):
+			if j >= len(p2) or i + j >= t:
+				break
+			else:
+				R[i + j - n] += p1[i] * p2[j]
+	return R
+
 class LinearRecurrence:
 	def __init__(self, equation):
 		# a polynomial describing the equation Fn = a0 F0 + ... + an-1 Fn-1
@@ -32,14 +47,17 @@ class LinearRecurrence:
 	
 	# code that computes the power series expansion of 1/denominator from x^(N - order + 1) up to x^(N)
 	def sliceCoeff(self, denominator, N):
+		order = len(denominator) - 1
 		if not N:
-			R = np.zeros(self.order)
+			R = np.zeros(order)
 			R[-1] = 1/denominator[0]
 			return R
 		T = denominator.copy()
 		for i in range(1, len(denominator), 2):
 			T[i] *= -1
 		A = polynomial.polymul(denominator, T)
+		if len(A) < (order << 1) + 1:
+			A = np.concatenate((A, np.zeros((order << 1) + 1 - len(A))))
 		V = A[0::2]
 		W = self.sliceCoeff(V, N >> 1)
 		S = np.array([0 for _ in range(((len(W) - 1) << 1) + 1)])
@@ -48,8 +66,9 @@ class LinearRecurrence:
 		if not (N & 1):
 			S = polynomial.polymulx(S)
 		
-		B = polynomial.polymul(T, S)
-		return np.array([B[self.order + i] for i in range(self.order)])
+		return middle_product(T, S)
+		# B = polynomial.polymul(T, S)
+		#return np.array([B[order + i] for i in range(order)])
 	
 	# code that computes the N-th term of k sequences that satisfy the same equation
 	# but may have different initial values
